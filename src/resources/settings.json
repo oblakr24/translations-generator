@@ -1,0 +1,32 @@
+{
+  "targets": [
+    {
+      "clientName": "mainClient",
+      "relativePathAndroid" : "android/mainClient",
+      "relativePathIOS" : "App/Clients/mainClient",
+      "doIOS": true,
+      "doAndroid": true,
+      "targetLanguages": [],
+      "defaultLanguage": "English"
+    },
+    {
+      "clientName": "clientOne",
+      "relativePathAndroid" : "android/clientOne",
+      "relativePathIOS" : "App/Clients/clientOne",
+      "doIOS": true,
+      "doAndroid": true,
+      "targetLanguages": [],
+      "defaultLanguage": "English"
+    },
+    {
+      "clientName": "clientTwo",
+      "relativePathAndroid" : "android/clientTwo",
+      "relativePathIOS" : "App/Clients/clientTwo",
+      "doIOS": true,
+      "doAndroid": true,
+      "targetLanguages": ["German", "English"],
+      "defaultLanguage": "German",
+      "clientCSVFilename": "translations_clientTwo.csv"
+    }
+  ]
+}

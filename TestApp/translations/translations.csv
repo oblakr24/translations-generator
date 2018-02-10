@@ -1,0 +1,15 @@
+Section;KEY;iOS;Android;Notes;English;Slovenian;Slovak;Czech;Romanian;Bulgarian
+;general_error;x;x;;Something went wrong please try again;Prišlo je do napake, poskusite znova;Niečo sa nepodarilo, skúste znova prosím.;Došlo k chybě, zkuste to znovu;A apărut o eroare, vă rugăm să încercați din nou;Нещо се обърка. Моля, опитайте отново
+;title_overview;x;x;;Overview;Pregled;Prehľad;Přehled;Rezumat;Преглед
+;home_screen_title_match_list;x;x;;Match List;Tekme;Zoznam zápasov;Zápasy;Meciuri;Списък с мачове
+;home_screen_title_tournaments;x;x;;Tournaments;Turnirji;Turnaje;Soutěže;Campionate;Турнири
+;home_screen_title_news;x;x;;News;Novice;Novinky;Novinky;Știri;Новини
+;home_screen_tournaments_search;x;x;;Search;Iskanje;Hľadať;Hledat;Căutare;Търсене
+;select_sport;x;x;;Select sport;Izberi šport;Vyberte si šport;Vybrat sport;Selectează sportul;Изберете спорт
+;match_list_today;x;x;;Today;Danes;Dnes;Dnes;Astăzi;Днес
+;match_list_tomorrow;x;x;;Tomorrow;Jutri;Zajtra;Zítra;Mâine;Утре
+;match_list_yesterday;x;x;;Yesterday;Včeraj;Včera;Včera;Ieri;Вчера
+;score_separator;x;x;;-;-;-;-;;-
+;standings;x;x;;Standings;Lestvica;Tabuľka;Tabulky;Clasament;Класиране
+;matches;x;x;;Matches;Tekme;Zápasy;Zápasy;Meciuri;Мачове
+;top_list;x;x;;Top Lists;Top seznami;Top zoznam;Nejlepší;Topuri;Топ списъци

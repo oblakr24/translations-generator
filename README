@@ -1,0 +1,57 @@
+This is a tool for generating translations files for Android and iOS applications for one or multiple clients per a white-label app.
+
+Building: a single .jar is built by the "fatJar" task in build.gradle.
+
+Setup:
+
+Create a folder at the root of your app and put inside the following:
+1. TranslationsGenerator.jar
+2. translations.csv (the main translations file)
+3. settings.json (the settings file)
+4. (optional) any additional client-specific .csv files 
+
+A sample application structure and setup is in the 'TestApp' folder.
+
+Requirements: JRE 1.8 or higher
+
+Usage: 
+java -jar TranslationsGenerator.jar <OPTIONAL options>
+All options: 
+-fl <csv folder> : name of the folder containing the settings and translations files, default: null - same folder where the .jar is
+-p <platform> : only write for the given platform (ios/android, case insensitive, default: null - both platforms)
+-c <client name> : only write for the given client (optional)
+-h : display help
+-fp <project folder> : relative path to the project (default: null - .jar's parent directory)
+-l <.csv filename> : .csv file name (default: translations.csv)
+-cl : display the list of clients
+-vp : more verbose printout (missing or empty translation items)
+
+
+Settings file structure (settings.json):
+
+{
+  "targets": [
+    {
+      "clientName": <the client name (used for logging only)>,
+      "relativePathAndroid" : <the relative [1] path to the android module, e.g."android/mainClient">,
+      "relativePathIOS" : <the relative [1] path to the ios module, e.g. "ios/Clients/mainClient">,
+      "doIOS": <whether to generate for iOS - true/false>,
+      "doAndroid": <whether to generate for Android - true/false>,
+      "targetLanguages": <a list of languages (strings) for which to generate, empty if all languages are to be generated for>,
+      "defaultLanguage": <the default language (e.g. "English"), only important for android where the default language's folder is named 'values'>,
+      "clientCSVFilename": <the .csv file name of the client's custom/overridden translations (optional)>
+    },
+	...
+  ]
+}
+
+[1]: This path is, by default (if the project folder is not overridden in the console), relative to the parent folder of where the .jar is located (check the sample application structure under the 'TestApp' folder)
+
+CSV file structure:
+
+Section;KEY;iOS;Android;Notes;English;German
+FirstSection;key_one;x;x;;EN_One;DE_Ein
+;key_two;x;x;;EN_Two;DE_Zwei
+SecondSection;key_three;x;x;;EN_Three;DE_Drei
+
+Escape character (for escaping semicolons): '\\'
