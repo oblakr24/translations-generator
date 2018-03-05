@@ -127,7 +127,8 @@ class IOSWriter(
                     val commentLine = "\n\t// " + currentSection + "\n"
                     osw.write(commentLine)
                 }
-                val line = String.format("\tstatic let %s = \"%s\"\n", item.key, item.key)
+                val formattedKey = item.key.split("_").joinToString("") { it.capitalize() }
+                val line = String.format("\tstatic let %s = \"%s\"\n", formattedKey, item.key)
                 osw.write(line)
             }
             // write the ending bracket
