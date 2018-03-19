@@ -13,7 +13,6 @@ class DemoAppTest {
      */
     @Test
     fun testGenerateForApp() {
-
         val settings = TranslationsGenerator.GeneratorSettings().apply {
             csvFolderName = "translations"
             projectPathStr = "TestApp"

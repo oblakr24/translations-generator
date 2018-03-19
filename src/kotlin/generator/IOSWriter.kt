@@ -80,7 +80,13 @@ class IOSWriter(
      * e.g. '%s' -> '%@'
      */
     private fun String.toiOSSpecificFormattedString(): String {
-        return replace("%s", "%@")
+        // replace base '%s' occurrences
+        var str = replace("%s", "%@")
+        // replace indexed occurrences, e.g. '%1$s'
+        Regex("%\\d+(\\\$s)").findAll(str).asIterable().mapNotNull { it.groups[1]?.range }.forEach { range ->
+            str = str.replaceRange(range, "$@")
+        }
+        return str
     }
 
     /**

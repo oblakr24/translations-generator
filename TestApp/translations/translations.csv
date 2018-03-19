@@ -1,5 +1,8 @@
 Section;KEY;iOS;Android;Notes;English;Slovenian;Slovak;Czech;Romanian;Bulgarian
 ;general_error;x;x;;Something went wrong please try again;Prišlo je do napake, poskusite znova;Niečo sa nepodarilo, skúste znova prosím.;Došlo k chybě, zkuste to znovu;A apărut o eroare, vă rugăm să încercați din nou;Нещо се обърка. Моля, опитайте отново
+;timeline_event_goal_kick;x;x;;Goal kick for %s.;Goal kick for %s.;Goal kick for %s.;Goal kick for %s.;Goal kick for %s.;Goal kick for %s.
+;general_score;x;x;;%1$s : %2$s;%1$s : %2$s;%1$s : %2$s;%1$s : %2$s;%1$s : %2$s;%1$s : %2$s
+;general_pn;x;x;;%1$s %3$s:%4$s %2$s;%1$s %3$s:%4$s %2$s;%1$s %3$s:%4$s %2$s;%1$s %3$s:%4$s %2$s;%1$s %3$s:%4$s %2$s;%1$s %3$s:%4$s %2$s
 ;title_overview;x;x;;Overview;Pregled;Prehľad;Přehled;Rezumat;Преглед
 ;home_screen_title_match_list;x;x;;Match List;Tekme;Zoznam zápasov;Zápasy;Meciuri;Списък с мачове
 ;home_screen_title_tournaments;x;x;;Tournaments;Turnirji;Turnaje;Soutěže;Campionate;Турнири
