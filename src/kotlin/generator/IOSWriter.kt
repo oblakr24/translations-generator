@@ -59,7 +59,8 @@ class IOSWriter(
                     val commentLine = "// $currentSection\";\n"
                     osw.write(commentLine)
                 }
-                val line = "\"" + item.key + "\" = \"" + item.translations[language] + "\";\n"
+                val translation = item.translations[language]?.toiOSSpecificFormattedString()
+                val line = "\"" + item.key + "\" = \"" + translation + "\";\n"
                 osw.write(line)
 
             } catch (e: IOException) {
@@ -72,6 +73,14 @@ class IOSWriter(
         } catch (e: IOException) {
             e.printStackTrace()
         }
+    }
+
+    /**
+     * Do some iOS customizations for translations of formatted strings
+     * e.g. '%s' -> '%@'
+     */
+    private fun String.toiOSSpecificFormattedString(): String {
+        return replace("%s", "%@")
     }
 
     /**
