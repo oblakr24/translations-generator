@@ -9,7 +9,7 @@ import java.nio.file.Path
  */
 abstract class TranslationWriter(protected var clientName: String,  // the client name
                                  protected val languageCodeResolver: LanguageCodeResolver,
-                                 protected var translationItems: List<TranslationItem>,  // individual translation items
+                                 private val translationItems: List<TranslationItem>,  // individual translation items
                                  private val languages: List<String>, protected var defaultLanguage: String,  // default language of the translations
                                  protected var outputPathPrefix: Path,
                                  private var verbosePrintout: Boolean = false) {
@@ -32,11 +32,18 @@ abstract class TranslationWriter(protected var clientName: String,  // the clien
             // setup the path based on the language
             outputPath = resolveOutputPath(language)
 
-            // filter invalid items
-            translationItems = translationItems.filter { isValidItem(it, language) }
-
             try {
-                write(language, File(outputPath.toString()))
+                val translations = translationItems.mapNotNull { item ->
+                    item.translations[language]?.let {
+                        Translation(
+                                key = item.key,
+                                translation = it,
+                                section = item.section
+                        )
+                    }?.takeIf { isValidItem(item, language) }
+                }
+                // write the items (filter invalid items)
+                write(translations, File(outputPath.toString()))
             } catch (e: ClientDoesNotExistException) {
                 // path to the file does not exist, which means the client is missing
                 e.printStackTrace()
@@ -79,6 +86,50 @@ abstract class TranslationWriter(protected var clientName: String,  // the clien
         return true
     }
 
+    protected fun parseCDATAParts(translationStr: String): List<Pair<Boolean, String>> {
+        // find any CDATA elements and get their ranges
+        val cdataRanges = Regex("<!\\[CDATA\\[.*?]]>").findAll(translationStr)
+                .asIterable().mapNotNull { it.groups.firstOrNull()?.range }
+
+        if (cdataRanges.isEmpty()) {
+            return listOf(false to translationStr)
+        }
+
+        val textsCdatas = mutableListOf<Pair<Boolean, String>>()
+        for (i in 0 until cdataRanges.size) {
+            val range = cdataRanges[i]
+            val start = range.start
+            val end = range.endInclusive
+
+            if (i == 0 && start > 0) {
+                // add the part before the first cdata
+                val partBefore = translationStr.substring(0, start)
+                textsCdatas.add(false to partBefore)
+            }
+            // add the cdata content
+            val cdata = translationStr.substring(range)
+            if (cdata.length > 12) {
+                val cdataContent = cdata.substring(9, cdata.length - 3)
+                textsCdatas.add(true to cdataContent)
+            }
+
+            if (i < cdataRanges.size - 1 && end + 1 < translationStr.length) {
+                val nextRange = cdataRanges[i + 1]
+                // add the part between this and the next cdata
+                val partBetween = translationStr.substring(end + 1, nextRange.start)
+                textsCdatas.add(false to partBetween)
+            }
+
+            if (i == cdataRanges.size - 1 && end + 1 < translationStr.length) {
+                // add the part after the last cdata
+                val partAfter = translationStr.substring(end + 1, translationStr.length)
+                textsCdatas.add(false to partAfter)
+            }
+        }
+
+        return textsCdatas
+    }
+
     /**
      * Resolve the final output path for a language
      */
@@ -94,7 +145,7 @@ abstract class TranslationWriter(protected var clientName: String,  // the clien
      * Writes the translations file
      * @throws ClientDoesNotExistException
      */
-    abstract fun write(language: String, file: File)
+    abstract fun write(translations: List<Translation>, file: File)
 
     /**
      * Sets up the path the translations will be written to,
@@ -103,3 +154,8 @@ abstract class TranslationWriter(protected var clientName: String,  // the clien
      */
     abstract fun setupOutputPath(language: String): Path
 }
+
+/**
+ * A single translation to be written
+ */
+data class Translation(val key: String, val translation: String, val section: String)

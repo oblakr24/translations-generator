@@ -12,7 +12,7 @@ class TranslationsParserTest {
      */
     @Test
     fun mainTranslationsFileTest() {
-        val defaultData = TranslationParser.parse(javaClass.getResource("/translations.csv").file)
+        val defaultData = TranslationParser.parse(javaClass.getResource("/translations.csv").file, false)
 
         // test the number of target languages
         assertEquals(6, defaultData.languages.size.toLong())
@@ -26,7 +26,7 @@ class TranslationsParserTest {
      */
     @Test
     fun clientTranslationsFileTest() {
-        val clientData = TranslationParser.parse(javaClass.getResource("/translations_clientTwo.csv").file)
+        val clientData = TranslationParser.parse(javaClass.getResource("/translations_clientTwo.csv").file, false)
 
         val clientItems = clientData.items
 
@@ -43,8 +43,8 @@ class TranslationsParserTest {
     @Test
     fun clientOverrideTranslationsFileTest() {
 
-        val defaultData = TranslationParser.parse(javaClass.getResource("/translations.csv").file)
-        val clientData = TranslationParser.parse(javaClass.getResource("/translations_clientTwo.csv").file)
+        val defaultData = TranslationParser.parse(javaClass.getResource("/translations.csv").file, false)
+        val clientData = TranslationParser.parse(javaClass.getResource("/translations_clientTwo.csv").file, false)
 
         assertEquals(2, clientData.items.size)
         assertEquals(14, defaultData.items.size)

@@ -26,6 +26,7 @@ object TranslationsGenerator {
         var verbosePrintout = false  // if true, print more verbose output like missing translations
         var onlyDoSelectedClient = false
         var printClientList = false
+        var debugMode = false
         var generateAllNonExistingPaths = false
     }
 
@@ -152,7 +153,7 @@ object TranslationsGenerator {
         }
 
         // get the main translations items
-        val mainItems = TranslationParser.parse(csvPath.toString()).items
+        val mainItems = TranslationParser.parse(csvPath.toString(), settings.debugMode, translationsSettings.writeEnglishIfMissing).items
 
         val allGeneratedFilePaths = mutableListOf<Path>()
 
@@ -198,11 +199,11 @@ object TranslationsGenerator {
                     continue
                 }
 
-                val (overriddenItems, newItems) = Utils.overrideTranslations(mainItems, TranslationParser.parse(csvClientPath.toString()).items)
+                val (overriddenItems, newItems) = Utils.overrideTranslations(mainItems, TranslationParser.parse(csvClientPath.toString(), settings.debugMode, translationsSettings.writeEnglishIfMissing).items)
                 println("$overriddenItems translations overridden, $newItems translations added for client ${targetSetting.clientName}.")
             }
 
-            val clientWriter = MainWriter(targetSetting, doIOS, doAndroid, languageCodeResolver, mainItems, projectPath, settings.verbosePrintout)
+            val clientWriter = MainWriter(targetSetting, doIOS, doAndroid, languageCodeResolver, mainItems, projectPath, settings.verbosePrintout, translationsSettings.iosKeyCaseType)
             clientWriters.add(clientWriter)
             allGeneratedFilePaths.addAll(clientWriter.generatedFilePaths)
 

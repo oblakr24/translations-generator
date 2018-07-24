@@ -23,9 +23,7 @@ class IOSWriter(
                 .resolve(Paths.get(languageCodeResolver.resolveLangCode(language) + ".lproj"))
                 .resolve(Paths.get("Localizable.strings"))
 
-    override fun writeAll() = super.writeAll() && createTranslationKeysFile()
-
-    override fun write(language: String, file: File) {
+    override fun write(translations: List<Translation>, file: File) {
         // return if the folder doesn't exist
         if (!file.parentFile.exists()) {
             System.err.println("Folder " + file.parentFile.toString() + " does not exist. Will not generate.")
@@ -49,7 +47,7 @@ class IOSWriter(
         val osw = OutputStreamWriter(fos)
 
         var currentSection = ""
-        for (item in translationItems) {
+        for (item in translations) {
             try {
                 // check whether the item has a new section specified
                 val section = item.section
@@ -59,7 +57,10 @@ class IOSWriter(
                     val commentLine = "// $currentSection\";\n"
                     osw.write(commentLine)
                 }
-                val translation = item.translations[language]?.toiOSSpecificFormattedString()
+
+                val joinedTranslation = parseCDATAParts(item.translation).joinToString("") { it.second }
+
+                val translation = joinedTranslation.toiOSSpecificFormattedString()
                 val line = "\"" + item.key + "\" = \"" + translation + "\";\n"
                 osw.write(line)
 
@@ -87,76 +88,5 @@ class IOSWriter(
             str = str.replaceRange(range, "$@")
         }
         return str
-    }
-
-    /**
-     * All credit to: Andraz Pajtler (a.pajtler@sportradar.com), 2016
-     */
-    private fun createTranslationKeysFile(): Boolean {
-        val path = outputPathPrefix
-                .resolve(clientName)
-                .resolve(Paths.get("Localization"))
-                .resolve(Paths.get("TranslationKey.swift"))
-        System.err.println(path.toString())
-
-        val file = File(path.toString())
-        if (!file.parentFile.exists()) {
-            System.err.println("Folder " + file.parentFile.toString() + " does not exist. Will not generate.")
-            return false
-        }
-
-        if (!file.exists()) {
-            try {
-                file.createNewFile()
-            } catch (ex: IOException) {
-                /* ignore */
-            }
-        }
-
-        val fos = try {
-            FileOutputStream(file)
-        } catch (e: FileNotFoundException) {
-            return false
-        }
-
-        val osw = OutputStreamWriter(fos)
-
-        try {
-            // write the file header
-            val header = "//\n" +
-                    "//  TranslationKey.swift\n" +
-                    "//  " + clientName + "\n" +
-                    "//\n" +
-                    "//\n" +
-                    "\n" +
-                    "struct TranslationKey {\n"
-            osw.write(header)
-            // write the keys
-            var currentSection = ""
-            for (item in translationItems) {
-                // check whether the item has a new section specified
-                val section = item.section
-                if (section.isNotEmpty() && section != currentSection) {
-                    currentSection = section
-                    // insert a new section element
-                    val commentLine = "\n\t// " + currentSection + "\n"
-                    osw.write(commentLine)
-                }
-                val formattedKey = item.key.split("_").joinToString("") { it.capitalize() }
-                val line = String.format("\tstatic let %s = \"%s\"\n", formattedKey, item.key)
-                osw.write(line)
-            }
-            // write the ending bracket
-            osw.write("}")
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-
-        try {
-            osw.close()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-        return true
     }
 }

@@ -62,6 +62,12 @@ enum class Argument(
                 settings.printClientList = true
             }),
 
+    DebugMode("Replaces the translations with their keys", "d", false,
+            "-d : replaces the translations with their keys",
+            { _, _, settings ->
+                settings.debugMode = true
+            }),
+
     VerbosePrintout("Verbose printout", "vp", false,
             "-vp : more verbose printout (missing or empty translation items)",
             { _, _, settings ->

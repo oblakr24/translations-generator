@@ -16,7 +16,17 @@ class TranslationsSettings(
         /**
          * An optional custom mapping of languages (used in the .csv header) to language codes (used in translation paths)
          */
-        val languageCodeMapping: Map<String, String>?
+        val languageCodeMapping: Map<String, String>?,
+        /**
+         * The case styles for generated iOS key properties
+         * If null, leave keys as they are
+         */
+        val iosKeyCaseType: IOSKeyCaseType? = null,
+        /**
+         * If true, any items with missing translations in other languages
+         * will take the English translation by detault
+         */
+        val writeEnglishIfMissing: Boolean = false
 )
 
 /**
@@ -54,7 +64,14 @@ data class TargetSetting(
         /**
          * The relative path to the client's iOS module folder
          */
-        var relativePathIOS: String?)
+        var relativePathIOS: String?
+)
+
+enum class IOSKeyCaseType {
+    Pascal, // PascalCase
+    Camel, // camelCase
+    Snake // snake_case
+}
 
 /**
  * Settings parser singleton

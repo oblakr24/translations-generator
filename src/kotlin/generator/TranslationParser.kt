@@ -77,7 +77,7 @@ object TranslationParser {
     /**
      * Parses the .csv file on csvFilePath and returns the translations data
      */
-    fun parse(csvFilePath: String) : TranslationData {
+    fun parse(csvFilePath: String, debugMode: Boolean, writeEnglishIfMissing: Boolean = false) : TranslationData {
         val languages = LinkedList<String>()
         val keys = LinkedList<String>()
         val items = mutableListOf<TranslationItem>()
@@ -90,6 +90,19 @@ object TranslationParser {
 
             // the first line is the header
             val headerRecord = records.next()
+
+            val headerIdxAndroid: Int
+            val headerIdxIOS: Int
+            val headerKeyAndroid = headerRecord.get(HeaderKeys.Android.idx)
+            val headerKeyIOS = headerRecord.get(HeaderKeys.IOS.idx)
+            // Swap if .csv header has a different order
+            if (headerKeyAndroid.toLowerCase().contains("ios") || headerKeyIOS.toLowerCase().contains("android")) {
+                headerIdxAndroid = HeaderKeys.IOS.idx
+                headerIdxIOS = HeaderKeys.Android.idx
+            } else {
+                headerIdxAndroid = HeaderKeys.Android.idx
+                headerIdxIOS = HeaderKeys.IOS.idx
+            }
 
             // index of key and import language
             val languageIndices = HashMap<String, Int>()
@@ -112,6 +125,12 @@ object TranslationParser {
             while (records.hasNext()) {
                 val record = records.next()
 
+                // get the section in the current row, otherwise take the latest one
+                val sectionName = record.get(HeaderKeys.Section.idx)
+                if (sectionName != null && sectionName.isNotEmpty()) {
+                    currentSection = sectionName
+                }
+
                 // make sure the column size equals header size (helps with debugging in case of a wrongly-formatted .csv file)
                 if (record.size() != headerRecord.size()) {
                     throw IndexOutOfBoundsException("Number of columns in row " + record.recordNumber + " doesn't match header size. \n" + record.toString())
@@ -120,23 +139,25 @@ object TranslationParser {
                 val key = record.get(HeaderKeys.Key.idx)
                 if (key.isBlank()) continue  // "" keys are invalid
 
-                // get the section in the current row, otherwise take the latest one
-                val sectionName = record.get(HeaderKeys.Section.idx)
-                if (sectionName != null && sectionName.isNotEmpty()) {
-                    currentSection = sectionName
-                }
-
-
                 // add the platforms where translations are available
                 val platforms = mutableListOf<Platform>().apply {
-                    if (record.get(HeaderKeys.IOS.idx) == "x") add(Platform.IOS)
-                    if (record.get(HeaderKeys.Android.idx) == "x") add(Platform.ANDROID)
+                    if (record.get(headerIdxIOS) == "x") add(Platform.IOS)
+                    if (record.get(headerIdxAndroid) == "x") add(Platform.ANDROID)
                 }
 
                 // add the translations
                 val translations = LinkedHashMap<String, String>()
                 for (lang in languages) {
-                    translations[lang] = record.get(languageIndices[lang]!!)
+                    if (!debugMode) {
+                        val translationForLang = record.get(languageIndices[lang]!!)
+                        if (writeEnglishIfMissing && translationForLang.isBlank()) {
+                            translations[lang] = record.get(languageIndices[languages.first]!!)
+                        } else {
+                            translations[lang] = translationForLang
+                        }
+                    } else {
+                        translations[lang] = key
+                    }
                 }
 
                 // create and add the item

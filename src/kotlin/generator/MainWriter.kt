@@ -11,7 +11,8 @@ class MainWriter(val targetSetting: TargetSetting,
                  languageCodeResolver: LanguageCodeResolver,
                  translationItems: List<TranslationItem>,
                  outputPathPrefix: Path,
-                 verbosePrintout: Boolean) {
+                 verbosePrintout: Boolean,
+                 iosKeyCaseType: IOSKeyCaseType?) {
 
     private val languages: List<String> by lazy {
         if (targetSetting.targetLanguages.isEmpty()) {
@@ -27,6 +28,10 @@ class MainWriter(val targetSetting: TargetSetting,
 
     private val iOSWriter by lazy {
         IOSWriter(targetSetting.relativePathIOS!!, languageCodeResolver, translationItems, languages, targetSetting.defaultLanguage, outputPathPrefix, verbosePrintout)
+    }
+
+    private val iOSTranslationKeysWriter by lazy {
+        IOSTranslationKeysWriter(targetSetting.relativePathIOS!!, languageCodeResolver, translationItems, languages, targetSetting.defaultLanguage, outputPathPrefix, iosKeyCaseType, verbosePrintout)
     }
 
     private val androidWriter by lazy {
@@ -52,7 +57,7 @@ class MainWriter(val targetSetting: TargetSetting,
             success = success and androidWriter.writeAll()
         }
         if (writeIOS) {
-            success = success and iOSWriter.writeAll()
+            success = success and iOSWriter.writeAll() and iOSTranslationKeysWriter.writeAll()
         }
         return success && (writeIOS || writeAndroid)
     }
