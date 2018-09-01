@@ -189,6 +189,8 @@ object TranslationsGenerator {
                 }
             }
 
+            val clientMainItems = mainItems.map { it.deepCopy() }.toMutableList() // Deep copy so that the items can be safely modified by each client
+
             // if the client's settings has a client translations filename, override the default translations
             if (targetSetting.clientCSVFilename?.isNotEmpty() == true) {
                 val csvClientPath = csvFolderPath.resolve(Paths.get(targetSetting.clientCSVFilename))
@@ -199,11 +201,11 @@ object TranslationsGenerator {
                     continue
                 }
 
-                val (overriddenItems, newItems) = Utils.overrideTranslations(mainItems, TranslationParser.parse(csvClientPath.toString(), settings.debugMode, translationsSettings.writeEnglishIfMissing).items)
+                val (overriddenItems, newItems) = Utils.overrideTranslations(clientMainItems, TranslationParser.parse(csvClientPath.toString(), settings.debugMode, translationsSettings.writeEnglishIfMissing).items)
                 println("$overriddenItems translations overridden, $newItems translations added for client ${targetSetting.clientName}.")
             }
 
-            val clientWriter = MainWriter(targetSetting, doIOS, doAndroid, languageCodeResolver, mainItems, projectPath, settings.verbosePrintout, translationsSettings.iosKeyCaseType)
+            val clientWriter = MainWriter(targetSetting, doIOS, doAndroid, languageCodeResolver, clientMainItems, projectPath, settings.verbosePrintout, translationsSettings.iosKeyCaseType)
             clientWriters.add(clientWriter)
             allGeneratedFilePaths.addAll(clientWriter.generatedFilePaths)
 

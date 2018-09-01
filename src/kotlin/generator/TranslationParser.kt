@@ -17,7 +17,7 @@ enum class Platform {
 /**
  * Represents a single translation item
  */
-class TranslationItem(
+data class TranslationItem(
         /**
         * The item key
         */
@@ -39,6 +39,8 @@ class TranslationItem(
      * Debugging helper
      */
     override fun toString(): String = "$key (${translations.size} translations)"
+
+    fun deepCopy() = TranslationItem(key, platforms.toList(), translations.toMutableMap(), section)
 }
 
 /**
